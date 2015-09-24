@@ -1,12 +1,17 @@
 __author__ = 'Sunny'
 from collections import OrderedDict
 from itertools import izip, count
+import multiprocessing
 import os
 import pickle
 
 import numpy as np
 from sklearn.cross_validation import StratifiedKFold, LeaveOneOut
-import DataHolder
+from sklearn.linear_model import LogisticRegression,LogisticRegressionCV
+from sklearn.lda import LDA
+from sklearn.ensemble import RandomForestClassifier,AdaBoostClassifier
+from DataHolder import DataHolder
+from Processor import Proc_unit
 
 
 def getData(conditions, condition_paths, echo):
@@ -43,6 +48,17 @@ if __name__ == "__main__":
     echos = 'LONG'
     ## read in data
     dataset, y = getData(condit, paths, echos)
+
+    ## classifiers to test out
+    clfs = [LogisticRegression(),
+        LogisticRegression(class_weight='auto'),
+        LogisticRegressionCV(),
+        LogisticRegressionCV(class_weight='auto'),
+        RandomForestClassifier(),
+        RandomForestClassifier(class_weight='auto'),
+        LDA(),
+        AdaBoostClassifier()
+       ]
     ## funky format it
     X = []
     for patient in dataset.iterkeys():
@@ -78,6 +94,10 @@ if __name__ == "__main__":
             folds.append(DataHolder(NR_SOURCES,dataset, X_train, X_test, y_train, y_test,
                                     spectra_train,spectra_test))
     ## process in parallel
+    proc_units = [Proc_unit(data_holder,clfs) for data_holder in folds]
+    no_of_process = multiprocessing.Pool(processes = max(1, multiprocessing.cpu_count() - 2))
+    results = no_of_process.map(proc_units.start,proc_units.start)## not working as I expected
+    ##possible solution -  make Proc_unit inherit from multiprocessing.Process ? call each in their own thread?
+    ## not real multiprocessing if I call the whole list (elem in list >nr proc) bwasasaasdadsa
 
-
-            ##analyze data
+     ##analyze data -TBD - TEST ABOVE CODE FIRST - PICKLE THE RESULT!!!!!

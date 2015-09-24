@@ -12,6 +12,10 @@ from skimage.measure import regionprops
 
 
 class DataHolder(object):
+    '''Fancy data container with the added benefit of feature extraction
+    DON'T FORGET TO WRITE THE DOCS STUPID
+
+    '''
     def __init__(self, nr_sources,dataset, X_train, X_test, y_train, y_test, spectra_train,spectra_test):
         self.nr_sources = nr_sources
         self.dataset = dataset
