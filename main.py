@@ -8,6 +8,7 @@ import numpy as np
 from sklearn.cross_validation import StratifiedKFold, LeaveOneOut
 
 
+
 def getData(conditions, condition_paths, echo):
     """Reads in memory all the data needed for the Glioblastoma vs Metastases paper.
 
@@ -47,6 +48,8 @@ if __name__ == "__main__":
         X.append(patient)
     X = np.array(X)
     skf = LeaveOneOut(X.shape[0])
+
+    ##make a list of DataHolder instances for each fold
     ## process in parallel
 
     ##analyze data
