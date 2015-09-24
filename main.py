@@ -6,7 +6,7 @@ import pickle
 
 import numpy as np
 from sklearn.cross_validation import StratifiedKFold, LeaveOneOut
-
+import DataHolder
 
 
 def getData(conditions, condition_paths, echo):
@@ -37,6 +37,7 @@ def getData(conditions, condition_paths, echo):
 
 
 if __name__ == "__main__":
+    NR_SOURCES = 3
     condit = [r'GBM', r'MET']
     paths = [r'C:\\Doctorat\\SOURCES\\BERN\\', r'C:\\Doctorat\\SOURCES\\BERN\\']
     echos = 'LONG'
@@ -48,8 +49,35 @@ if __name__ == "__main__":
         X.append(patient)
     X = np.array(X)
     skf = LeaveOneOut(X.shape[0])
+    ##build max capacity arrays for holding train/test spectra
+    maxNr = 0
+    for patient in dataset.keys():
+        maxNr += dataset[patient]['Aligned'].shape[0]
 
     ##make a list of DataHolder instances for each fold
+    folds = []
+    for train_index, test_index in skf:
+        ##1: split into training and testing set
+        spectra_train,spectra_test = np.zeros((maxNr,195)),np.zeros((maxNr,195))
+        X_train, X_test = X[train_index], X[test_index]
+        y_train, y_test = y[train_index], y[test_index]
+        ##1.1.: Get training/testing spectra
+        spectra_test_index = 0
+        spectra_train_index = 0
+        for index,patient in enumerate(dataset.keys()):
+            if patient in X_train:
+                spectra_train[spectra_train_index:spectra_train_index+dataset[patient]['Aligned'].shape[0],:] \
+                    = dataset[patient]['Aligned']
+                spectra_train_index+=dataset[patient]['Aligned'].shape[0]
+            else:
+                spectra_test[spectra_test_index:spectra_test_index+dataset[patient]['Aligned'].shape[0], :] \
+                    = dataset[patient]['Aligned']
+                spectra_test_index+=dataset[patient]['Aligned'].shape[0]
+            spectra_train = spectra_train[:spectra_train_index,:]
+            spectra_test = spectra_test[:spectra_test_index,:]
+            folds.append(DataHolder(NR_SOURCES,dataset, X_train, X_test, y_train, y_test,
+                                    spectra_train,spectra_test))
     ## process in parallel
 
-    ##analyze data
+
+            ##analyze data
