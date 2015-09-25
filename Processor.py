@@ -17,3 +17,13 @@ class Proc_unit(object):
             classifier.fit(self.data.train_features,self.data.y_train)
             self.cat_predictions.append((classifier.predict(self.data.test_features)))
             self.prob_predictions.append(classifier.predict_proba(self.data.test_features))
+
+
+def wrapper(proc_unit):
+    '''
+
+    :param Proc_unit:
+    :return:
+    '''
+    proc_unit.start()
+    return proc_unit

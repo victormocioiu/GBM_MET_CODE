@@ -26,8 +26,8 @@ class DataHolder(object):
         self.spectra_train = spectra_train
         self.spectra_test = spectra_test
         ##
-        self.sources = np.zeros(nr_sources,spectra_train.shape[1])
-        self.nnls_sources = np.zeros(nr_sources,spectra_train.shape[1])
+        self.sources = np.zeros((nr_sources,spectra_train.shape[1]))
+        self.nnls_sources = np.zeros((nr_sources,spectra_train.shape[1]))
         self.train_features = np.zeros((spectra_train.shape[0],33))
         self.test_features = np.zeros((spectra_test.shape[0],33))
         self.train_grid = []

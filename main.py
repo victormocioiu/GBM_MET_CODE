@@ -11,7 +11,7 @@ from sklearn.linear_model import LogisticRegression,LogisticRegressionCV
 from sklearn.lda import LDA
 from sklearn.ensemble import RandomForestClassifier,AdaBoostClassifier
 from DataHolder import DataHolder
-from Processor import Proc_unit
+from Processor import Proc_unit, wrapper
 
 
 def getData(conditions, condition_paths, echo):
@@ -77,27 +77,23 @@ if __name__ == "__main__":
         spectra_train,spectra_test = np.zeros((maxNr,195)),np.zeros((maxNr,195))
         X_train, X_test = X[train_index], X[test_index]
         y_train, y_test = y[train_index], y[test_index]
-        ##1.1.: Get training/testing spectra
         spectra_test_index = 0
         spectra_train_index = 0
         for index,patient in enumerate(dataset.keys()):
             if patient in X_train:
-                spectra_train[spectra_train_index:spectra_train_index+dataset[patient]['Aligned'].shape[0],:] \
-                    = dataset[patient]['Aligned']
+                spectra_train[spectra_train_index:spectra_train_index+dataset[patient]['Aligned'].shape[0],:] = dataset[patient]['Aligned']
                 spectra_train_index+=dataset[patient]['Aligned'].shape[0]
             else:
-                spectra_test[spectra_test_index:spectra_test_index+dataset[patient]['Aligned'].shape[0], :] \
-                    = dataset[patient]['Aligned']
+                spectra_test[spectra_test_index:spectra_test_index+dataset[patient]['Aligned'].shape[0],:] = dataset[patient]['Aligned']
                 spectra_test_index+=dataset[patient]['Aligned'].shape[0]
-            spectra_train = spectra_train[:spectra_train_index,:]
-            spectra_test = spectra_test[:spectra_test_index,:]
-            folds.append(DataHolder(NR_SOURCES,dataset, X_train, X_test, y_train, y_test,
-                                    spectra_train,spectra_test))
+                
+        spectra_train = spectra_train[:spectra_train_index,:]
+        spectra_test = spectra_test[:spectra_test_index,:]
+        folds.append(DataHolder(NR_SOURCES,dataset, X_train, X_test, y_train, y_test,
+                                spectra_train,spectra_test))
     ## process in parallel
     proc_units = [Proc_unit(data_holder,clfs) for data_holder in folds]
     no_of_process = multiprocessing.Pool(processes = max(1, multiprocessing.cpu_count() - 2))
-    results = no_of_process.map(proc_units.start,proc_units.start)## not working as I expected
-    ##possible solution -  make Proc_unit inherit from multiprocessing.Process ? call each in their own thread?
-    ## not real multiprocessing if I call the whole list (elem in list >nr proc) bwasasaasdadsa
-
-     ##analyze data -TBD - TEST ABOVE CODE FIRST - PICKLE THE RESULT!!!!!
+    results = no_of_process.map(wrapper,proc_units)
+    no_of_process.close()
+    no_of_process.join()
