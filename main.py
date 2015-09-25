@@ -44,7 +44,7 @@ def getData(conditions, condition_paths, echo):
 if __name__ == "__main__":
     NR_SOURCES = 3
     condit = [r'GBM', r'MET']
-    paths = [r'C:\\Doctorat\\SOURCES\\BERN\\', r'C:\\Doctorat\\SOURCES\\BERN\\']
+    paths = [r'C:\\Doctorat\\SOURCES\\BERN\\', r'C:\\Doctorat\\SOURCES\\BERN\\'] #change for path in ComputeEngine
     echos = 'LONG'
     ## read in data
     dataset, y = getData(condit, paths, echos)
@@ -97,3 +97,6 @@ if __name__ == "__main__":
     results = no_of_process.map(wrapper,proc_units)
     no_of_process.close()
     no_of_process.join()
+
+    pickle.dump(results,open('results.pkl','wb'))
+    print "Fuck you guys,I'm going home"
