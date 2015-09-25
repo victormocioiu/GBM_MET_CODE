@@ -44,7 +44,10 @@ def getData(conditions, condition_paths, echo):
 if __name__ == "__main__":
     NR_SOURCES = 3
     condit = [r'GBM', r'MET']
-    paths = [r'C:\\Doctorat\\SOURCES\\BERN\\', r'C:\\Doctorat\\SOURCES\\BERN\\'] #change for path in ComputeEngine
+    dir  = os.path.dirname(__file__)
+
+    #paths = [os.path.join(dir,r'\Data'), os.path.join(dir,r'\Data')]# -DOES NOT WORK ON WINDOWS
+    paths = [r'/home/Sunny/code/Data' ,r'/home/Sunny/code/Data']
     echos = 'LONG'
     ## read in data
     dataset, y = getData(condit, paths, echos)
