@@ -97,13 +97,15 @@ from Processor import Proc_unit, wrapper
 #     ## process in parallel
 #     proc_units = [Proc_unit(data_holder,clfs) for data_holder in folds]
 if __name__ == "__main__":
-    proc_units
-
-
-    # no_of_process = multiprocessing.Pool(processes = max(1, multiprocessing.cpu_count()))
-    # results = no_of_process.map(wrapper,proc_units)
-    # no_of_process.close()
-    # no_of_process.join()
-    #
-    # pickle.dump(results,open('results.pkl','wb'))
-    # print "Fuck you guys,I'm going home"
+    pkl_file = open('proc.pkl', 'rb')
+    proc_units = cPickle.load(pkl_file)
+    pkl_file.close()
+    no_of_process = multiprocessing.Pool(processes = max(1, multiprocessing.cpu_count()))
+    results = no_of_process.map(wrapper,proc_units)
+    no_of_process.close()
+    no_of_process.join()
+    print 'processing completed'
+    res_file = open('results.pkl','wb')
+    cPickle.dump(results,res_file)
+    res_file.close()
+    print "Fuck you guys,I'm going home"
